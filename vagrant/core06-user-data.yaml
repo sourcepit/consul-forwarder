@@ -1,0 +1,32 @@
+#cloud-config
+
+coreos:
+    units:
+    -   name: registrator.service
+        command: start
+        enable: true
+        content: |
+            [Unit]
+            Requires=docker.service
+            
+            [Service]            
+            Environment="IMAGE_NAME=gliderlabs/registrator"
+            Environment="CONTAINER_NAME=registrator"
+            
+            ExecStartPre=-/usr/bin/docker stop -f ${CONTAINER_NAME}
+            ExecStartPre=-/usr/bin/docker rm -f ${CONTAINER_NAME}
+            ExecStartPre=-/usr/bin/docker pull ${IMAGE_NAME}
+            
+            ExecStart=/usr/bin/docker run \
+                --name ${CONTAINER_NAME} \
+                -v /var/run/docker.sock:/tmp/docker.sock \
+                -h %H \
+                ${IMAGE_NAME} \
+                consul://192.168.56.101:8500
+            
+            TimeoutStartSec=10min
+            
+            ExecStop=/usr/bin/docker stop ${CONTAINER_NAME}
+            
+            [Install]
+            WantedBy=multi-user.target

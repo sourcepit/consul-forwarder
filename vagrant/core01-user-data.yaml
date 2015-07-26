@@ -1,0 +1,58 @@
+#cloud-config
+
+coreos:
+    units:
+    -   name: docker-tcp.socket
+        command: start
+        enable: true
+        content: |
+            [Unit]
+            Description=Docker Socket for the API
+            
+            [Socket]
+            ListenStream=2375
+            Service=docker.service
+            BindIPv6Only=both
+            
+            [Install]
+            WantedBy=sockets.target
+    -   name: consul-agent.service
+        command: start
+        enable: true
+        content: |
+            [Unit]
+            Requires=docker.service
+            
+            [Service]            
+            Environment="IMAGE_NAME=progrium/consul"
+            Environment="CONTAINER_NAME=consul-agent"
+            
+            ExecStartPre=-/usr/bin/docker stop -f ${CONTAINER_NAME}
+            ExecStartPre=-/usr/bin/docker rm -f ${CONTAINER_NAME}
+            ExecStartPre=-/usr/bin/docker pull ${IMAGE_NAME}
+            
+            ExecStart=/usr/bin/docker run \
+                --name ${CONTAINER_NAME} \
+                -v /data/${CONTAINER_NAME}:/data \
+                -p $private_ipv4:8300:8300 \
+                -p $private_ipv4:8301:8301 \
+                -p $private_ipv4:8301:8301/udp \
+                -p $private_ipv4:8302:8302 \
+                -p $private_ipv4:8302:8302/udp \
+                -p $private_ipv4:8400:8400 \
+                -p $private_ipv4:8500:8500 \
+                -p $private_ipv4:53:53/udp \
+                -h %H \
+                ${IMAGE_NAME} \
+                -server \
+                -data-dir /data \
+                -ui-dir /ui \
+                -advertise $private_ipv4 \
+                -bootstrap-expect 1
+            
+            TimeoutStartSec=10min
+            
+            ExecStop=/usr/bin/docker stop ${CONTAINER_NAME}
+            
+            [Install]
+            WantedBy=multi-user.target

@@ -1,0 +1,46 @@
+#cloud-config
+
+coreos:
+    units:
+    -   name: consul-server.service
+        command: start
+        enable: true
+        content: |
+            [Unit]
+            Requires=docker.service
+            
+            [Service]            
+            Environment="IMAGE_NAME=gliderlabs/consul-server"
+            Environment="CONTAINER_NAME=consul-server"
+            
+            ExecStartPre=-/usr/bin/docker stop -f ${CONTAINER_NAME}
+            ExecStartPre=-/usr/bin/docker rm -f ${CONTAINER_NAME}
+            ExecStartPre=-/usr/bin/docker pull ${IMAGE_NAME}
+            
+            ExecStart=/usr/bin/docker run \
+                --name ${CONTAINER_NAME} \
+                -v /data/${CONTAINER_NAME}:/data \
+                -p $private_ipv4:8300:8300 \
+                -p $private_ipv4:8301:8301 \
+                -p $private_ipv4:8301:8301/udp \
+                -p $private_ipv4:8302:8302 \
+                -p $private_ipv4:8302:8302/udp \
+                -p $private_ipv4:8400:8400 \
+                -p $private_ipv4:8500:8500 \
+                -p $private_ipv4:53:53/udp \
+                -h %H \
+                ${IMAGE_NAME} \
+                -data-dir /data \
+                -advertise $private_ipv4 \
+                -bootstrap-expect 3 \
+                -retry-interval 10s \
+                -retry-join 192.168.56.101 \
+                -retry-join 192.168.56.102 \
+                -retry-join 192.168.56.103
+            
+            TimeoutStartSec=10min
+            
+            ExecStop=/usr/bin/docker stop ${CONTAINER_NAME}
+            
+            [Install]
+            WantedBy=multi-user.target
