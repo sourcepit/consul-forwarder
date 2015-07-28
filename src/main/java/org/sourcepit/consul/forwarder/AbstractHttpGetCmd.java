@@ -16,21 +16,14 @@
 
 package org.sourcepit.consul.forwarder;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 
-import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
-import com.google.gson.stream.JsonReader;
 
-public abstract class AbstractHttpGetCmd<Body extends JsonElement> implements Runnable {
+public abstract class AbstractHttpGetCmd<Content extends JsonElement> implements Runnable {
 
    protected final HttpClient httpClient;
 
@@ -38,14 +31,10 @@ public abstract class AbstractHttpGetCmd<Body extends JsonElement> implements Ru
       this.httpClient = httpClient;
    }
 
-   @SuppressWarnings("unchecked")
    @Override
    public void run() {
       try {
-         final HttpResponse response = httpClient.execute(createRequest());
-         try (JsonReader jsonReader = createJsonReader(response)) {
-            handle((Body) new JsonParser().parse(jsonReader));
-         }
+         handle(httpClient.execute(createRequest(), JsonResponseHandler.<Content> toJson()));
       }
       catch (IOException e) {
          handle(e);
@@ -54,12 +43,8 @@ public abstract class AbstractHttpGetCmd<Body extends JsonElement> implements Ru
 
    protected abstract HttpGet createRequest();
 
-   protected abstract void handle(Body body);
+   protected abstract void handle(Content body);
 
    protected abstract void handle(IOException e);
-
-   private static JsonReader createJsonReader(HttpResponse response) throws IOException {
-      return new JsonReader(new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8")));
-   }
 
 }

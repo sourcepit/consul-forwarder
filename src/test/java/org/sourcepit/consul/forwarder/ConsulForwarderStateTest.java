@@ -16,27 +16,13 @@
 
 package org.sourcepit.consul.forwarder;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.junit.Test;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+public class ConsulForwarderStateTest {
 
-public class ConsulForwarderState {
+   @Test
+   public void test() {
 
-   private static final Logger LOG = LoggerFactory.getLogger(ConsulForwarderState.class);
-
-   private JsonObject consulState;
-   
-   public void applyConsulState(JsonObject consulState) {
-      LOG.info(consulState.toString());
-      this.consulState = consulState;
+      ConsulForwarderState state = new ConsulForwarderState();
    }
-
-   public void applyDockerState(JsonArray dockerState) {
-      LOG.info(dockerState.toString());
-      
-      
-   }
-
 }
