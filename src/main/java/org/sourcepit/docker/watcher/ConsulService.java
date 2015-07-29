@@ -18,7 +18,6 @@ package org.sourcepit.docker.watcher;
 
 import java.util.List;
 
-import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -31,7 +30,6 @@ public class ConsulService {
    public List<String> tags;
    public int port;
    public String address;
-   public List<Check> checks;
 
    @Override
    public String toString() {

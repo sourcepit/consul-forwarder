@@ -1,7 +1,7 @@
 [
 	{
-		"Id": "d8a2ddeca0b090719e9461e11a4c5fa03d1a1f1c5b29cde22852f3bc91475bdb",
-		"Created": "2015-07-28T20:10:23.440827724Z",
+		"Id": "e8bc406e341d5e919e2597c49308cee74b2b686715303c986d05e3ad3ca4d78a",
+		"Created": "2015-07-29T16:50:15.231232488Z",
 		"Path": "/bin/start",
 		"Args": 
 		[
@@ -23,10 +23,10 @@
 			"Restarting": false,
 			"OOMKilled": false,
 			"Dead": false,
-			"Pid": 2208,
+			"Pid": 1704,
 			"ExitCode": 0,
 			"Error": "",
-			"StartedAt": "2015-07-28T20:10:23.644637181Z",
+			"StartedAt": "2015-07-29T16:50:15.457665279Z",
 			"FinishedAt": "0001-01-01T00:00:00Z"
 		},
 
@@ -34,18 +34,18 @@
 		"NetworkSettings": 
 		{
 			"Bridge": "",
-			"EndpointID": "b8b3b9ba2d709f180e633e3074ecc08f1ca49311824b1725700d9ac6d94ba6c2",
+			"EndpointID": "8ace7c578bf30070a7cc0564a88d5862ecfb534c75b08b6b96211da1e91563f1",
 			"Gateway": "172.17.42.1",
 			"GlobalIPv6Address": "",
 			"GlobalIPv6PrefixLen": 0,
 			"HairpinMode": false,
-			"IPAddress": "172.17.0.3",
+			"IPAddress": "172.17.0.1",
 			"IPPrefixLen": 16,
 			"IPv6Gateway": "",
 			"LinkLocalIPv6Address": "",
 			"LinkLocalIPv6PrefixLen": 0,
-			"MacAddress": "02:42:ac:11:00:03",
-			"NetworkID": "75b2a7613ddc217751a678575976ab946172d8fe18a0ccf1b3400e371b0fe6ae",
+			"MacAddress": "02:42:ac:11:00:01",
+			"NetworkID": "ad9672e9519652b1bf2f64795603996af48863f179a9144001eaa36ebef0029e",
 			"PortMapping": null,
 			"Ports": 
 			{
@@ -109,21 +109,21 @@
 				"8500/tcp": 
 				[
 					{
-						"HostIp": "0.0.0.0",
-						"HostPort": "8585"
+						"HostIp": "192.168.56.101",
+						"HostPort": "8500"
 					}
 				]
 			},
 
-			"SandboxKey": "/var/run/docker/netns/d8a2ddeca0b0",
+			"SandboxKey": "/var/run/docker/netns/e8bc406e341d",
 			"SecondaryIPAddresses": null,
 			"SecondaryIPv6Addresses": null
 		},
 
-		"ResolvConfPath": "/var/lib/docker/containers/d8a2ddeca0b090719e9461e11a4c5fa03d1a1f1c5b29cde22852f3bc91475bdb/resolv.conf",
-		"HostnamePath": "/var/lib/docker/containers/d8a2ddeca0b090719e9461e11a4c5fa03d1a1f1c5b29cde22852f3bc91475bdb/hostname",
-		"HostsPath": "/var/lib/docker/containers/d8a2ddeca0b090719e9461e11a4c5fa03d1a1f1c5b29cde22852f3bc91475bdb/hosts",
-		"LogPath": "/var/lib/docker/containers/d8a2ddeca0b090719e9461e11a4c5fa03d1a1f1c5b29cde22852f3bc91475bdb/d8a2ddeca0b090719e9461e11a4c5fa03d1a1f1c5b29cde22852f3bc91475bdb-json.log",
+		"ResolvConfPath": "/var/lib/docker/containers/e8bc406e341d5e919e2597c49308cee74b2b686715303c986d05e3ad3ca4d78a/resolv.conf",
+		"HostnamePath": "/var/lib/docker/containers/e8bc406e341d5e919e2597c49308cee74b2b686715303c986d05e3ad3ca4d78a/hostname",
+		"HostsPath": "/var/lib/docker/containers/e8bc406e341d5e919e2597c49308cee74b2b686715303c986d05e3ad3ca4d78a/hosts",
+		"LogPath": "/var/lib/docker/containers/e8bc406e341d5e919e2597c49308cee74b2b686715303c986d05e3ad3ca4d78a/e8bc406e341d5e919e2597c49308cee74b2b686715303c986d05e3ad3ca4d78a-json.log",
 		"Name": "/consul-agent",
 		"RestartCount": 0,
 		"Driver": "overlay",
@@ -226,8 +226,8 @@
 				"8500/tcp": 
 				[
 					{
-						"HostIp": "",
-						"HostPort": "8585"
+						"HostIp": "192.168.56.101",
+						"HostPort": "8500"
 					}
 				]
 			},
@@ -332,6 +332,7 @@
 			"StdinOnce": false,
 			"Env": 
 			[
+				"Foo=bar",
 				"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
 				"SHELL=/bin/bash"
 			],
@@ -370,7 +371,8 @@
 			"OnBuild": null,
 			"Labels": 
 			{
-				
+				"com.example.environment": "production",
+				"com.example.storage": "ssd"
 			}
 		}
 	}

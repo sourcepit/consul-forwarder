@@ -34,6 +34,9 @@ coreos:
             ExecStart=/usr/bin/docker run \
                 --name ${CONTAINER_NAME} \
                 -v /data/${CONTAINER_NAME}:/data \
+                -e Foo bar \
+                --label com.example.environment="production" \
+                --label com.example.storage="ssd" \
                 -p $private_ipv4:8300:8300 \
                 -p $private_ipv4:8301:8301 \
                 -p $private_ipv4:8301:8301/udp \
