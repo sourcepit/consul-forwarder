@@ -2,6 +2,12 @@
 
 coreos:
     units:
+    -   name: docker.service
+        drop-ins:
+        -   name: 50-insecure-registry.conf
+            content: |
+                [Service]
+                Environment=DOCKER_OPTS='--insecure-registry="docker.bosch-si.com:5000"'
     -   name: docker-tcp.socket
         command: start
         enable: true
@@ -24,7 +30,7 @@ coreos:
             Requires=docker.service
             
             [Service]            
-            Environment="IMAGE_NAME=progrium/consul"
+            Environment="IMAGE_NAME=docker.bosch-si.com:5000/progrium/consul"
             Environment="CONTAINER_NAME=consul-agent"
             
             ExecStartPre=-/usr/bin/docker stop -f ${CONTAINER_NAME}
@@ -41,6 +47,7 @@ coreos:
                 -p $private_ipv4:8302:8302/udp \
                 -p $private_ipv4:8400:8400 \
                 -p $private_ipv4:8500:8500 \
+                -p $private_ipv4:53:53/tcp \
                 -p $private_ipv4:53:53/udp \
                 -h %H \
                 ${IMAGE_NAME} \
@@ -48,7 +55,10 @@ coreos:
                 -data-dir /data \
                 -ui-dir /ui \
                 -advertise $private_ipv4 \
-                -bootstrap-expect 1
+                -bootstrap-expect 3 \
+                -retry-join 192.168.56.101 \
+                -retry-join 192.168.56.102 \
+                -retry-join 192.168.56.103
             
             TimeoutStartSec=10min
             

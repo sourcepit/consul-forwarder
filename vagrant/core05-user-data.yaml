@@ -2,6 +2,26 @@
 
 coreos:
     units:
+    -   name: docker.service
+        drop-ins:
+        -   name: 50-insecure-registry.conf
+            content: |
+                [Service]
+                Environment=DOCKER_OPTS='--insecure-registry="docker.bosch-si.com:5000"'
+    -   name: docker-tcp.socket
+        command: start
+        enable: true
+        content: |
+            [Unit]
+            Description=Docker Socket for the API
+            
+            [Socket]
+            ListenStream=2375
+            Service=docker.service
+            BindIPv6Only=both
+            
+            [Install]
+            WantedBy=sockets.target
     -   name: consul-agent.service
         command: start
         enable: true
@@ -10,7 +30,7 @@ coreos:
             Requires=docker.service
             
             [Service]            
-            Environment="IMAGE_NAME=gliderlabs/consul-agent"
+            Environment="IMAGE_NAME=docker.bosch-si.com:5000/progrium/consul"
             Environment="CONTAINER_NAME=consul-agent"
             
             ExecStartPre=-/usr/bin/docker stop -f ${CONTAINER_NAME}
@@ -27,45 +47,15 @@ coreos:
                 -p $private_ipv4:8302:8302/udp \
                 -p $private_ipv4:8400:8400 \
                 -p $private_ipv4:8500:8500 \
+                -p $private_ipv4:53:53/tcp \
                 -p $private_ipv4:53:53/udp \
                 -h %H \
                 ${IMAGE_NAME} \
                 -data-dir /data \
                 -advertise $private_ipv4 \
-                -advertise $private_ipv4 \
-                -retry-interval 10s \
                 -retry-join 192.168.56.101 \
                 -retry-join 192.168.56.102 \
                 -retry-join 192.168.56.103
-            
-            TimeoutStartSec=10min
-            
-            ExecStop=/usr/bin/docker stop ${CONTAINER_NAME}
-            
-            [Install]
-            WantedBy=multi-user.target
-    -   name: registrator.service
-        command: start
-        enable: true
-        content: |
-            [Unit]
-            Requires=docker.service
-            After=consul.service
-            
-            [Service]            
-            Environment="IMAGE_NAME=gliderlabs/registrator"
-            Environment="CONTAINER_NAME=registrator"
-            
-            ExecStartPre=-/usr/bin/docker stop -f ${CONTAINER_NAME}
-            ExecStartPre=-/usr/bin/docker rm -f ${CONTAINER_NAME}
-            ExecStartPre=-/usr/bin/docker pull ${IMAGE_NAME}
-            
-            ExecStart=/usr/bin/docker run \
-                --name ${CONTAINER_NAME} \
-                -v /var/run/docker.sock:/tmp/docker.sock \
-                -h %H \
-                ${IMAGE_NAME} \
-                consul://$private_ipv4:8500
             
             TimeoutStartSec=10min
             
